@@ -15,12 +15,12 @@ module.exports = (robot) ->
 
   post_tweet = ->
     hour = @date.getHours()
-    @client.post('statuses/update', { status: "#{hour}:00です" }, (err, data, response) ->
+    @client.post('statuses/update', {status: "#{hour}:00です"}, (err, data, response) ->
       # console.log response
-      console.log "tweet test with cron at #{hour}:00"
+      console.log "test tweet with cron at #{hour}:00"
     )
 
-  cron = new cronJob
+  job = new cronJob
     cronTime: "0 0 * * * *"
     start: true
     timeZone: "Asia/Tokyo"

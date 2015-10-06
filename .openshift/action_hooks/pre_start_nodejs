@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export TZ='Asia/Tokyo'
+echo "set \"$TZ\" as Timezone"

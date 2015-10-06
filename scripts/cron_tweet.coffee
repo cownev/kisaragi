@@ -22,7 +22,8 @@ module.exports = (robot) ->
 
   job = new cronJob
     cronTime: "0 0 * * * *"
-    start: true
+    start: false
     timeZone: "Asia/Tokyo"
     onTick: ->
       post_tweet()
+  job.start()

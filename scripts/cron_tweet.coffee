@@ -11,10 +11,10 @@ module.exports = (robot) ->
   
 
   @client = new twit config
-  @date   = new Date
 
   post_tweet = ->
-    hour = @date.getHours()
+    hour = new Date().getHours()
+
     @client.post('statuses/update', {status: "#{hour}:00です"}, (err, data, response) ->
       # console.log response
       console.log "test tweet with cron at #{hour}:00"
@@ -22,8 +22,7 @@ module.exports = (robot) ->
 
   job = new cronJob
     cronTime: "0 0 * * * *"
-    start: false
+    start: true
     timeZone: "Asia/Tokyo"
     onTick: ->
       post_tweet()
-  job.start()

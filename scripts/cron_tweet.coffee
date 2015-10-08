@@ -2,7 +2,6 @@ config  = require('../config/events.json')
 cronJob = require('cron').CronJob
 twit    = require('twit')
 
-
 module.exports = (robot) ->
 
   keys =
@@ -11,7 +10,6 @@ module.exports = (robot) ->
     access_token:        process.env.HUBOT_TWITTER_TOKEN
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
   
-
   @client = new twit keys
 
   calcDiffDays = (event_date) ->
@@ -26,7 +24,7 @@ module.exports = (robot) ->
     name = config.events[0].name
     days = calcDiffDays config.events[0].date
 
-    @client.post('statuses/update', {status: "#{name}まであと#{days}！！"}, (err, data, response) ->
+    @client.post('statuses/update', {status: "#{name}まで あと#{days}日！！"}, (err, data, response) ->
       console.log "test tweet with cron at #{hour}:00"
     )
   

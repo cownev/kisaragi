@@ -24,7 +24,7 @@ module.exports = (robot) ->
     name = config.events[0].name
     days = calcDiffDays config.events[0].date
 
-    @client.post('statuses/update', {status: "#{name}まで あと#{days}日！！"}, (err, data, response) ->
+    @client.post('statuses/update', {status: "#{name}まで あと#{days}日。testing:#{hour}"}, (err, data, response) ->
       console.log "test tweet with cron at #{hour}:00"
     )
   

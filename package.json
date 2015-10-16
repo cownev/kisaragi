@@ -19,7 +19,6 @@
     "hubot-scripts": "^2.16.2",
     "hubot-shipit": "^0.2.0",
     "hubot-twitter": "^2.1.1",
-    "hubot-twitter-userstream": "0.0.3",
     "moment": "^2.10.6",
     "time": "^0.11.4",
     "twit": "^2.1.0"
@@ -28,6 +27,6 @@
     "node": "0.10.x"
   },
   "scripts": {
-    "start": "bin/hubot -a twitter-userstream -n himekurrier"
+    "start": "bin/hubot -a twitter -n himekurrier"
   }
 }

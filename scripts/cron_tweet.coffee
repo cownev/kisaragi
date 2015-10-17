@@ -9,7 +9,7 @@ module.exports = (robot) ->
     consumer_secret:     process.env.HUBOT_TWITTER_SECRET
     access_token:        process.env.HUBOT_TWITTER_TOKEN
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
-  
+
   client = new twit keys
 
   post_tweet = ->
@@ -24,16 +24,17 @@ module.exports = (robot) ->
       today    = moment().startOf 'day'
       eventday = moment event.date
       days     = eventday.diff today, 'days'
+      hashtag  = "#イベント #カウントダウン"
 
       if days < 0
         robot.logger.info "already passed date of #{name}"
         return true
 
       else if days is 0
-        message = "本日は#{name}。\n##{name}"
+        message = "本日は#{name}。\n##{name} #{hashtag}"
 
       else
-        message = "#{name}まで#{days}日。\n##{name}"
+        message = "#{name}まで#{days}日。\n##{name} #{hashtag}"
 
       client.post 'statuses/update', {status: message}, (err, data, response) ->
         if err?

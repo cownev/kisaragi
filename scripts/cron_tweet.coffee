@@ -25,12 +25,22 @@ module.exports = (robot) ->
       eventday = moment event.date
       days     = eventday.diff today, 'days'
 
-      client.post 'statuses/update', {status: "#{name}まで あと#{days}日。\ntesting: #{hour}:00"}, (err, data, response) ->
+      if days < 0
+        robot.logger.info "already passed date of #{name}"
+        return true
+
+      else if days is 0
+        message = "本日は#{name}。\n##{name}"
+
+      else
+        message = "#{name}まで#{days}日。\n##{name}"
+
+      client.post 'statuses/update', {status: message}, (err, data, response) ->
         if err?
           robot.logger.error "#{err}"
         else
           robot.logger.info "tweet with cron at #{hour}:00"
-  
+
   job = new cronJob
     cronTime: "0 0 * * * *"
     start: true

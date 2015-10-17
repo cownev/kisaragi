@@ -1,6 +1,6 @@
 {
-  "name": "himekurrier",
-  "version": "0.0.0",
+  "name": "HiMekuriHiBo",
+  "version": "0.1.0",
   "private": true,
   "author": "Masahiko TOKUMARU",
   "description": "A simple helpful robot for HiMekurry",
@@ -27,6 +27,6 @@
     "node": "0.10.x"
   },
   "scripts": {
-    "start": "bin/hubot -a twitter -n himekurrier"
+    "start": "bin/hubot -a twitter -n HiMekuriHiBo"
   }
 }

@@ -1,5 +1,7 @@
 cronJob = require('cron').CronJob
 twit    = require('twit')
+rs      = require('fs').ReadStream('./config/ng_keyword_list.txt')
+rl      = require('readline').createInterface({'input': rs, 'output': {}})
 
 module.exports = (robot) ->
   keys =
@@ -10,11 +12,14 @@ module.exports = (robot) ->
 
   client     = new twit keys
   keyword    = "#イベント"
-  ngKeywords = ["RT", "#スマホ", "#アルバイト", "#ブログ", "#セミナー", "#婚活", "#街コン", "#風俗", "#デリヘル", "#キャバクラ", "#求人", "#ディスカウント", "#クラブ"]
 
-  for word in ngKeywords
-    word =  " " + "-" + word
+  rl.on('line', (line) ->
+    word = " " + "-" + line.trim()
     keyword += word
+  )
+  rl.on('close', ->
+    robot.logger.info "follow script search keyword: '#{keyword}'"
+  )
 
   follow = ->
     client.get 'search/tweets', { q: "#{keyword}", count: 10 }, (err, data, response) ->
@@ -26,7 +31,7 @@ module.exports = (robot) ->
             robot.logger.info "followed #{tweet.user.screen_name}"
 
   job = new cronJob
-    cronTime: "0 15 * * * *"
+    cronTime: "0 15,45 * * * *"
     start: true
     timeZone: "Asia/Tokyo"
     onTick: ->

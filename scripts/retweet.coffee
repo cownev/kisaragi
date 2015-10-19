@@ -41,7 +41,7 @@ module.exports = (robot) ->
       robot.logger.info "[test] retweet_uids: #{retweet_uids}"
 
   job = new cronJob
-    cronTime: "0 */10 * * * *"
+    cronTime: "0 10,30,50 * * * *"
     start: true
     timeZone: "Asia/Tokyo"
     onTick: ->

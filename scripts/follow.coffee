@@ -10,11 +10,11 @@ module.exports = (robot) ->
     access_token:        process.env.HUBOT_TWITTER_TOKEN
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
 
-  client     = new twit keys
-  keyword    = "#イベント"
+  client  = new twit keys
+  keyword = "#イベント"
 
   rl.on('line', (line) ->
-    word = " " + "-" + line.trim()
+    word = " " + "-\"" + line.trim() + "\""
     keyword += word
   )
   rl.on('close', ->

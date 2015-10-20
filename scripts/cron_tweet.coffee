@@ -34,7 +34,7 @@ module.exports = (robot) ->
         message = "本日は#{name}。\n##{name} #{hashtag}"
 
       else
-        message = "#{name}まで#{days}日。\n##{name} #{hashtag}"
+        message = "#{name}まであと#{days}日。\n##{name} #{hashtag}"
 
       client.post 'statuses/update', {status: message}, (err, data, response) ->
         if err?

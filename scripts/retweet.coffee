@@ -25,7 +25,7 @@ module.exports = (robot) ->
   retweet = ->
     client.get 'search/tweets', { q: "#{keyword}", count: 10 }, (err, data, response) ->
       data.statuses.some (tweet) ->
-        if retweet_uids.length is 10
+        if retweet_uids.length is 20
           retweet_uids.length = 0
 
         if retweet_uids.indexOf(tweet.user.id) < 0

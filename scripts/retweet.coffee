@@ -23,7 +23,7 @@ module.exports = (robot) ->
   )
 
   retweet = ->
-    client.get 'search/tweets', { q: "#{keyword}", count: 10, result_type: "popular"}, (err, data, response) ->
+    client.get 'search/tweets', { q: "#{keyword}", count: 10, result_type: "mixed"}, (err, data, response) ->
       data.statuses.some (tweet) ->
         if retweet_uids.length >= 72
           retweet_uids.length = 0

@@ -23,18 +23,17 @@ module.exports = (robot) ->
   )
 
   retweet = ->
-    client.get 'search/tweets', { q: "#{keyword}", count: 10 }, (err, data, response) ->
+    client.get 'search/tweets', { q: "#{keyword}", count: 10, result_type: "popular"}, (err, data, response) ->
       data.statuses.some (tweet) ->
-        if retweet_uids.length is 72
+        if retweet_uids.length >= 72
           retweet_uids.length = 0
 
-        if retweet_uids.indexOf(tweet.user.id) < 0
+        unless tweet.user.id in retweet_uids
           client.post 'statuses/retweet/:id', { id: tweet.id_str }, (err, data, response) ->
           if err?
             robot.logger.error "#{err}"
           else
             robot.logger.info "retweet #{tweet.user.screen_name}'s #{tweet.id_str}"
-
           retweet_uids.push(tweet.user.id)
           return true
 

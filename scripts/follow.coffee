@@ -1,7 +1,7 @@
 cronJob = require('cron').CronJob
 twit    = require('twit')
-rs      = require('fs').ReadStream('./config/ng_keyword_list.txt')
-rl      = require('readline').createInterface({'input': rs, 'output': {}})
+fs      = require('fs')
+rl      = require('readline')
 
 module.exports = (robot) ->
   keys =
@@ -12,23 +12,40 @@ module.exports = (robot) ->
 
   client  = new twit keys
   keyword = "#イベント"
+  ng_uids         = []
+  counter         = 0
 
-  rl.on('line', (line) ->
+  keywords_rl  = rl.createInterface({
+    'input': fs.ReadStream('./config/ng_keywords.txt'), 'output': {}
+  })
+  uids_rl  = rl.createInterface({
+    'input': fs.ReadStream('./config/ng_uids.txt'), 'output': {}
+  })
+
+  keywords_rl.on('line', (line) ->
     word = " " + "-\"" + line.trim() + "\""
     keyword += word
   )
-  rl.on('close', ->
-    robot.logger.info "follow script search keyword: '#{keyword}'"
+  keywords_rl.on('close', ->
+    robot.logger.info "retweet script search keyword: '#{keyword}'"
+  )
+
+  uids_rl.on('line', (line) ->
+    ng_uids.push(line)
+  )
+  uids_rl.on('close', ->
+    robot.logger.info "ng_uids: '#{ng_uids}'"
   )
 
   follow = ->
     client.get 'search/tweets', { q: "#{keyword}", count: 10 }, (err, data, response) ->
       data.statuses.forEach (tweet) ->
-        client.post 'friendships/create', {user_id: tweet.user.id}, (err, data, response) ->
-          if err?
-            robot.logger.error "#{err}"
-          else
-            robot.logger.info "followed #{tweet.user.screen_name}"
+        unless tweet.user.id_str in ng_uids
+          client.post 'friendships/create', {user_id: tweet.user.id}, (err, data, response) ->
+            if err?
+              robot.logger.error "#{err}"
+            else
+              robot.logger.info "followed #{tweet.user.screen_name}"
 
   job = new cronJob
     cronTime: "0 15,45 * * * *"

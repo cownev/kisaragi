@@ -36,7 +36,14 @@ module.exports = (robot) ->
   )
   uids_rl.on('close', ->
     no_retweet_uids = ng_uids.concat()
-    robot.logger.info "ng_uids: '#{ng_uids}'"
+    client.get "account/verify_credentials", (err, data, response) ->
+      if err?
+        robot.logger.error "#{err}"
+      else
+        no_retweet_uids.push(data.id_str)
+        robot.logger.info "succeeded to add #{data.screen_name}'s uid to no_retweet_uids"
+
+      robot.logger.info "ng_uids: '#{ng_uids}'"
   )
 
   retweet = ->
@@ -46,19 +53,18 @@ module.exports = (robot) ->
           no_retweet_uids.length = 0
           no_retweet_uids = ng_uids.concat()
 
-        unless tweet.user.id in no_retweet_uids
+        unless tweet.user.id_str in no_retweet_uids
           client.post 'statuses/retweet/:id', { id: tweet.id_str }, (err, data, response) ->
-          if err?
-            robot.logger.error "#{err}"
-          else
-            robot.logger.info "retweet #{tweet.user.screen_name}'s #{tweet.id_str}"
+            if err?
+              robot.logger.error "#{err}"
+            else
+              robot.logger.info "retweet #{tweet.user.screen_name}'s #{tweet.id_str}"
+              no_retweet_uids.push(tweet.user.id)
+              counter++
 
-          no_retweet_uids.push(tweet.user.id)
-          counter++
+            robot.logger.info "retweeted_uids counter: #{counter}"
+
           return true
-
-      robot.logger.info "retweeted_uids counter: #{counter}"
-
 
   job = new cronJob
     cronTime: "0 10,30,50 * * * *"

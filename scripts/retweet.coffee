@@ -59,7 +59,7 @@ module.exports = (robot) ->
               robot.logger.error "#{err}"
             else
               robot.logger.info "retweet #{tweet.user.screen_name}'s #{tweet.id_str}"
-              no_retweet_uids.push(tweet.user.id)
+              no_retweet_uids.push(tweet.user.id_str)
               counter++
 
             robot.logger.info "retweeted_uids counter: #{counter}"

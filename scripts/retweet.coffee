@@ -57,7 +57,7 @@ module.exports = (robot) ->
           counter++
           return true
 
-      robot.logger.info "no_retweet_uids: #{no_retweet_uids}"
+      robot.logger.info "retweeted_uids counter: #{counter}"
 
 
   job = new cronJob

@@ -1,5 +1,5 @@
 {
-  "name": "HiMekuriHiBo",
+  "name": "eventora",
   "version": "0.1.0",
   "private": true,
   "author": "Masahiko TOKUMARU",
@@ -27,6 +27,6 @@
     "node": "0.10.x"
   },
   "scripts": {
-    "start": "bin/hubot -a twitter -n HiMekuriHiBo"
+    "start": "bin/hubot -a twitter -n himekurry"
   }
 }

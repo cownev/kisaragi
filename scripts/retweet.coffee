@@ -56,7 +56,7 @@ module.exports = (robot) ->
         unless tweet.user.id_str in no_retweet_uids
           client.post 'statuses/retweet/:id', { id: tweet.id_str }, (err, data, response) ->
             if err?
-              robot.logger.error "#{err}"
+              robot.logger.error "#{err} #{tweet.user.screen_name}'s #{tweet.id_str}"
             else
               robot.logger.info "retweet #{tweet.user.screen_name}'s #{tweet.id_str}"
               no_retweet_uids.push(tweet.user.id_str)

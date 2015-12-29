@@ -9,13 +9,13 @@ module.exports = (robot) ->
 
   client = new twit keys
 
-  client.get "account/verify_credentials", (err, data, response) ->
-    stream = client.stream 'user'
+#  client.get "account/verify_credentials", (err, data, response) ->
+#    stream = client.stream 'user'
 
-    stream.on 'follow', (event) ->
-      if data? and data.id isnt event.source.id
-        client.post 'friendships/create', {user_id: event.source.id}, (err, data, response) ->
-          if err?
-            robot.logger.error "#{err}"
-          else
-            robot.logger.info "refollowed #{event.source.screen_name}"
+#    stream.on 'follow', (event) ->
+#      if data? and data.id isnt event.source.id
+#        client.post 'friendships/create', {user_id: event.source.id}, (err, data, response) ->
+#          if err?
+#            robot.logger.error "#{err}"
+#          else
+#            robot.logger.info "refollowed #{event.source.screen_name}"

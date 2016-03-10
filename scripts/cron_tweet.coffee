@@ -12,7 +12,7 @@ module.exports = (robot) ->
 
   client = new twit keys
   mongo  = mongodb.MongoClient
-  url    = process.env.OPENSHIFT_MONGODB_DB_URL
+  url    = process.env.MONGODB_URL
 
   post_tweet = ->
     hour = new Date().getHours()
@@ -45,7 +45,6 @@ module.exports = (robot) ->
 
             else
               message = "#{name}まであと#{days}日。\n##{name} #{hashtag}"
-              robot.logger.info "#{message}"
 
             client.post 'statuses/update', {status: message}, (err, data, response) ->
               if err?

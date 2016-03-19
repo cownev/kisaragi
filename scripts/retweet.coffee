@@ -1,5 +1,6 @@
 cronJob = require('cron').CronJob
 twit    = require('twit')
+mongodb = require('mongodb')
 fs      = require('fs')
 rl      = require('readline')
 
@@ -11,25 +12,15 @@ module.exports = (robot) ->
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
 
   client          = new twit keys
-  keyword         = "#イベント"
+  mongo           = mongodb.MongoClient
+  mongo_url       = process.env.MONGODB_URL
   ng_uids         = []
   no_retweet_uids = []
   counter         = 0
 
-  keywords_rl  = rl.createInterface({
-    'input': fs.ReadStream('./config/ng_keywords.txt'), 'output': {}
-  })
   uids_rl  = rl.createInterface({
     'input': fs.ReadStream('./config/ng_uids.txt'), 'output': {}
   })
-
-  keywords_rl.on('line', (line) ->
-    word = " " + "-\"" + line.trim() + "\""
-    keyword += word
-  )
-  keywords_rl.on('close', ->
-    robot.logger.info "retweet script search keyword: '#{keyword}'"
-  )
 
   uids_rl.on('line', (line) ->
     ng_uids.push(line)
@@ -46,8 +37,29 @@ module.exports = (robot) ->
       robot.logger.info "ng_uids: '#{ng_uids}'"
   )
 
-  retweet = ->
-    client.get 'search/tweets', { q: "#{keyword}", count: 10, result_type: "mixed"}, (err, data, response) ->
+  create_search_keywords = (callback) ->
+    mongo.connect(mongo_url, (err, db) ->
+      if err?
+        robot.logger.error "#{err}"
+      else
+        collection = db.collection 'ngs'
+        keywords   = "#イベント"
+
+        collection.find({"keyword": {$exists:true}}).each( (err, doc) ->
+          if err?
+            robot.logger.error "#{err}"
+          else if doc?
+            keyword = " " + "-\"" + doc.keyword + "\""
+            keywords += keyword
+          else
+            callback(keywords)
+        )
+    )
+
+  retweet = (keywords) ->
+    robot.logger.info "retweet search keywords: '#{keywords}'"
+
+    client.get 'search/tweets', { q: "#{keywords}", count: 10, result_type: "mixed"}, (err, data, response) ->
       data.statuses.some (tweet) ->
         if counter >= 72
           no_retweet_uids.length = 0
@@ -66,9 +78,12 @@ module.exports = (robot) ->
 
           return true
 
+  retweet_job = ->
+    create_search_keywords(retweet)
+
   job = new cronJob
     cronTime: "0 10,30,50 * * * *"
     start: true
     timeZone: "Asia/Tokyo"
     onTick: ->
-      retweet()
+      retweet_job()

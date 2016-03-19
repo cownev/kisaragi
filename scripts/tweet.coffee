@@ -10,14 +10,14 @@ module.exports = (robot) ->
     access_token:        process.env.HUBOT_TWITTER_TOKEN
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
 
-  client = new twit keys
-  mongo  = mongodb.MongoClient
-  url    = process.env.MONGODB_URL
+  client    = new twit keys
+  mongo     = mongodb.MongoClient
+  mongo_url = process.env.MONGODB_URL
 
-  post_tweet = ->
+  tweet = ->
     hour = new Date().getHours()
 
-    mongo.connect(url, (err, db) ->
+    mongo.connect(mongo_url, (err, db) ->
       if err?
         robot.logger.error "#{err}"
       else
@@ -57,9 +57,12 @@ module.exports = (robot) ->
         )
     )
 
+  tweet_job = ->
+    tweet()
+
   job = new cronJob
     cronTime: "0 0 * * * *"
     start: true
     timeZone: "Asia/Tokyo"
     onTick: ->
-      post_tweet()
+      tweet_job()

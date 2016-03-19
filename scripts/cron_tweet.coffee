@@ -21,7 +21,7 @@ module.exports = (robot) ->
       if err?
         robot.logger.error "#{err}"
       else
-        collection = db.collection 'event'
+        collection = db.collection 'events'
 
         collection.findOne({"tweet_hour": hour}, (err, event) ->
           db.close()

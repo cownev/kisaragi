@@ -1,8 +1,8 @@
-cronJob = require('cron').CronJob
-twit    = require('twit')
-mongodb = require('mongodb')
-fs      = require('fs')
-rl      = require('readline')
+cronJob       = require('cron').CronJob
+twit          = require('twit')
+fs            = require('fs')
+rl            = require('readline')
+search_action = require('../lib/search_action')
 
 module.exports = (robot) ->
   keys =
@@ -12,8 +12,6 @@ module.exports = (robot) ->
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
 
   client          = new twit keys
-  mongo           = mongodb.MongoClient
-  mongo_url       = process.env.MONGODB_URL
   ng_uids         = []
   no_retweet_uids = []
   counter         = 0
@@ -36,25 +34,6 @@ module.exports = (robot) ->
 
       robot.logger.info "ng_uids: '#{ng_uids}'"
   )
-
-  create_search_keywords = (callback) ->
-    mongo.connect(mongo_url, (err, db) ->
-      if err?
-        robot.logger.error "#{err}"
-      else
-        collection = db.collection 'ngs'
-        keywords   = "#イベント"
-
-        collection.find({"keyword": {$exists:true}}).each( (err, doc) ->
-          if err?
-            robot.logger.error "#{err}"
-          else if doc?
-            keyword = " " + "-\"" + doc.keyword + "\""
-            keywords += keyword
-          else
-            callback(keywords)
-        )
-    )
 
   retweet = (keywords) ->
     robot.logger.info "retweet search keywords: '#{keywords}'"
@@ -79,7 +58,7 @@ module.exports = (robot) ->
           return true
 
   retweet_job = ->
-    create_search_keywords(retweet)
+    search_action(robot, retweet)
 
   job = new cronJob
     cronTime: "0 10,30,50 * * * *"

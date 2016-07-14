@@ -53,7 +53,7 @@ module.exports = (robot) ->
                 robot.logger.info "tweet with cron at #{hour}:00"
 
           else
-            robot.logger.info "not found event at #{hour}:00"
+            robot.logger.info "not found any events at #{hour}:00"
         )
     )
 

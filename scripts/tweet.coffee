@@ -10,9 +10,9 @@ module.exports = (robot) ->
     access_token:        process.env.HUBOT_TWITTER_TOKEN
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
 
-  client    = new twit keys
-  mongo     = mongodb.MongoClient
-  mongo_url = process.env.MONGODB_URL
+  twit_client = new twit keys
+  mongo       = mongodb.MongoClient
+  mongo_url   = process.env.MONGODB_URL
 
   tweet = ->
     hour = new Date().getHours()
@@ -46,7 +46,7 @@ module.exports = (robot) ->
             else
               message = "#{name}まであと#{days}日。\n##{name} #{hashtag}"
 
-            client.post 'statuses/update', {status: message}, (err, data, response) ->
+            twit_client.post 'statuses/update', {status: message}, (err, data, response) ->
               if err?
                 robot.logger.error "#{err}"
               else

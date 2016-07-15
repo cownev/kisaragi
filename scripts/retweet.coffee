@@ -11,7 +11,7 @@ module.exports = (robot) ->
     access_token:        process.env.HUBOT_TWITTER_TOKEN
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
 
-  client          = new twit keys
+  twit_client     = new twit keys
   ng_uids         = []
   no_retweet_uids = []
   counter         = 0
@@ -25,7 +25,7 @@ module.exports = (robot) ->
   )
   uids_rl.on('close', ->
     no_retweet_uids = ng_uids.concat()
-    client.get "account/verify_credentials", (err, data, response) ->
+    twit_client.get "account/verify_credentials", (err, data, response) ->
       if err?
         robot.logger.error "#{err}"
       else
@@ -38,14 +38,14 @@ module.exports = (robot) ->
   retweet = (keywords) ->
     robot.logger.info "retweet search keywords: '#{keywords}'"
 
-    client.get 'search/tweets', { q: "#{keywords}", count: 10, result_type: "mixed"}, (err, data, response) ->
+    twit_client.get 'search/tweets', { q: "#{keywords}", count: 10, result_type: "mixed"}, (err, data, response) ->
       data.statuses.some (tweet) ->
         if counter >= 72
           no_retweet_uids.length = 0
           no_retweet_uids = ng_uids.concat()
 
         unless tweet.user.id_str in no_retweet_uids
-          client.post 'statuses/retweet/:id', { id: tweet.id_str }, (err, data, response) ->
+          twit_client.post 'statuses/retweet/:id', { id: tweet.id_str }, (err, data, response) ->
             if err?
               robot.logger.error "#{err} #{tweet.user.screen_name}'s #{tweet.id_str}"
             else

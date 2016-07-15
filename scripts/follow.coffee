@@ -11,7 +11,7 @@ module.exports = (robot) ->
     access_token:        process.env.HUBOT_TWITTER_TOKEN
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
 
-  client        = new twit keys
+  twit_client   = new twit keys
   no_folow_uids = []
   counter       = 0
 
@@ -23,7 +23,7 @@ module.exports = (robot) ->
     no_folow_uids.push(line)
   )
   uids_rl.on('close', ->
-    client.get "account/verify_credentials", (err, data, response) ->
+    twit_client.get "account/verify_credentials", (err, data, response) ->
       if err?
         robot.logger.error "#{err}"
       else
@@ -36,10 +36,10 @@ module.exports = (robot) ->
   follow = (keywords) ->
     robot.logger.info "follow search keywords: '#{keywords}'"
 
-    client.get 'search/tweets', { q: "#{keywords}", count: 10 }, (err, data, response) ->
+    twit_client.get 'search/tweets', { q: "#{keywords}", count: 10 }, (err, data, response) ->
       data.statuses.forEach (tweet) ->
         unless tweet.user.id_str in no_folow_uids
-          client.post 'friendships/create', {user_id: tweet.user.id}, (err, data, response) ->
+          twit_client.post 'friendships/create', {user_id: tweet.user.id}, (err, data, response) ->
             if err?
               robot.logger.error "#{err}"
             else

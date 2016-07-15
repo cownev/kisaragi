@@ -30,7 +30,7 @@ module.exports = (robot) ->
             name      = client.name
             message   = client.messages[Math.floor Math.random() * client.messages.length]
             link      = client.links[Math.floor Math.random() * client.links.length]
-            hashtag   = "#イベント"
+            hashtag   = client.tags.join(' ')
             promotion = "#{message}\n#{link}\n#{hashtag}"
 
             twit_client.post 'statuses/update', {status: promotion}, (err, data, response) ->
@@ -38,7 +38,6 @@ module.exports = (robot) ->
                 robot.logger.error "#{err}"
               else
                 robot.logger.info "promotion tweet for #{name}"
-
           else
             robot.logger.info "not found any clients"
         )
@@ -48,7 +47,7 @@ module.exports = (robot) ->
     tweet()
 
   job = new cronJob
-    cronTime: "0 30 12,21 * * 5"
+    cronTime: "0 30 12,21 * * 0,3,5"
     start: true
     timeZone: "Asia/Tokyo"
     onTick: ->

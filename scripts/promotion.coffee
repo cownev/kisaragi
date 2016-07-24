@@ -20,7 +20,7 @@ module.exports = (robot) ->
       else
         collection = db.collection 'clients'
 
-        collection.findOne({}, (err, client) ->
+        collection.findOne({"active":true}, (err, client) ->
           db.close()
 
           if err?
@@ -47,7 +47,7 @@ module.exports = (robot) ->
     tweet()
 
   job = new cronJob
-    cronTime: "0 30 12,21 * * 0,3,5"
+    cronTime: "0 30 12,20 * * *"
     start: true
     timeZone: "Asia/Tokyo"
     onTick: ->

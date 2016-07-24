@@ -11,15 +11,12 @@ module.exports = (uid, callback) ->
       else
         collection = db.collection 'users'
 
-        collection.findOne(({"twitter_id": uid, "$or":[{ "ng": true}, { "self": true}]}), (err, doc) ->
+        collection.findOne(({"twitter_id":uid, "type":{$in:['ng','self']}}), (err, doc) ->
           if err?
             flag = null
 
-          else if doc?
-            flag = true
-
           else
-            flag = false
+            flag = if doc? then true else false
 
           callback(flag, err)
         )

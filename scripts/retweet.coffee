@@ -1,8 +1,7 @@
 cronJob       = require('cron').CronJob
 twit          = require('twit')
-fs            = require('fs')
-rl            = require('readline')
 search_action = require('../lib/search_action')
+user_filter   = require('../lib/user_filter')
 
 module.exports = (robot) ->
   keys =
@@ -11,57 +10,62 @@ module.exports = (robot) ->
     access_token:        process.env.HUBOT_TWITTER_TOKEN
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
 
-  twit_client     = new twit keys
-  ng_uids         = []
-  no_retweet_uids = []
-  counter         = 0
+  twit_client    = new twit keys
+  retweeted_uids = []
 
-  uids_rl  = rl.createInterface({
-    'input': fs.ReadStream('./config/ng_uids.txt'), 'output': {}
-  })
+  post = (tweets) ->
+    if !tweets.length
+      robot.logger.info "did not find any tweets for retweet"
+      return
 
-  uids_rl.on('line', (line) ->
-    ng_uids.push(line)
-  )
-  uids_rl.on('close', ->
-    no_retweet_uids = ng_uids.concat()
-    twit_client.get "account/verify_credentials", (err, data, response) ->
-      if err?
-        robot.logger.error "#{err}"
-      else
-        no_retweet_uids.push(data.id_str)
-        robot.logger.info "succeeded to add #{data.screen_name}'s uid to no_retweet_uids"
+    else
+      tweet = tweets[0]
 
-      robot.logger.info "ng_uids: '#{ng_uids}'"
-  )
+      if retweeted_uids.length >= 72
+        retweeted_uids.length = 0
+        robot.logger.info "reset retweeted_uids"
+
+      user_filter(tweet.user.id, (ng_flag, err) ->
+        if err?
+          robot.logger.error "#{err}"
+          return
+
+        else if !ng_flag
+          unless tweet.user.id_str in retweeted_uids
+            twit_client.post 'statuses/retweet/:id', { id: tweet.id_str }, (err, data, response) ->
+              if err?
+                robot.logger.error "#{err} #{tweet.user.screen_name}'s #{tweet.id_str}"
+                tweets.shift()
+                return post(tweets)
+
+              else
+                robot.logger.info "retweeted #{tweet.user.screen_name}'s #{tweet.id_str}"
+                retweeted_uids.push(tweet.user.id_str)
+
+              robot.logger.info "retweeted_uids counter: #{retweeted_uids.length}"
+              return
+
+          else
+            robot.logger.info "did not retweet because #{tweet.user.id} is in retweeted_uids"
+            tweets.shift()
+            return post(tweets)
+
+        else
+          robot.logger.info "did not retweet because #{tweet.user.id} is ng id"
+          tweets.shift()
+          return post(tweets)
+        )
 
   retweet = (keywords) ->
     robot.logger.info "retweet search keywords: '#{keywords}'"
-
-    twit_client.get 'search/tweets', { q: "#{keywords}", count: 10, result_type: "mixed"}, (err, data, response) ->
-      data.statuses.some (tweet) ->
-        if counter >= 72
-          no_retweet_uids.length = 0
-          no_retweet_uids = ng_uids.concat()
-
-        unless tweet.user.id_str in no_retweet_uids
-          twit_client.post 'statuses/retweet/:id', { id: tweet.id_str }, (err, data, response) ->
-            if err?
-              robot.logger.error "#{err} #{tweet.user.screen_name}'s #{tweet.id_str}"
-            else
-              robot.logger.info "retweet #{tweet.user.screen_name}'s #{tweet.id_str}"
-              no_retweet_uids.push(tweet.user.id_str)
-              counter++
-
-            robot.logger.info "retweeted_uids counter: #{counter}"
-
-          return true
+    twit_client.get 'search/tweets', { q: "#{keywords}", count: 5, result_type: "mixed"}, (err, data, response) ->
+      post(data.statuses)
 
   retweet_job = ->
     search_action(robot, retweet)
 
   job = new cronJob
-    cronTime: "0 10,30,50 * * * *"
+    cronTime: "0 10,50 * * * *"
     start: true
     timeZone: "Asia/Tokyo"
     onTick: ->

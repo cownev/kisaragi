@@ -33,16 +33,17 @@ module.exports = (robot) ->
         else if !ng_flag
           unless tweet.user.id_str in retweeted_uids
             twit_client.post 'statuses/retweet/:id', { id: tweet.id_str }, (err, data, response) ->
+
+              retweeted_uids.push(tweet.user.id_str)
+              robot.logger.info "added to retweeted_uids: #{tweet.user.screen_name}"
+              robot.logger.info "retweeted_uids counter : #{retweeted_uids.length}"
+
               if err?
                 robot.logger.error "#{err} #{tweet.user.screen_name}'s #{tweet.id_str}"
                 tweets.shift()
                 return post(tweets)
 
-              else
-                robot.logger.info "retweeted #{tweet.user.screen_name}'s #{tweet.id_str}"
-                retweeted_uids.push(tweet.user.id_str)
-
-              robot.logger.info "retweeted_uids counter: #{retweeted_uids.length}"
+              robot.logger.info "retweeted #{tweet.user.screen_name}'s #{tweet.id_str}"
               return
 
           else

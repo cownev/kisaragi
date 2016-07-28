@@ -12,24 +12,31 @@ module.exports = (robot) ->
 
   twit_client = new twit keys
 
-  follow = (keywords) ->
-    robot.logger.info "follow search keywords: '#{keywords}'"
+  follow = (keywords, err) ->
+    if err?
+      robot.logger.error "#{err}"
+    else
+      robot.logger.info "follow search keywords: '#{keywords}'"
 
-    twit_client.get 'search/tweets', { q: "#{keywords}", count: 10 }, (err, data, response) ->
-      data.statuses.forEach (tweet) ->
-        user_filter(tweet.user.id, (ng_flag, err) ->
-          if err?
-            robot.logger.error "#{err}"
-          else if !ng_flag
-            twit_client.post 'friendships/create', {user_id: tweet.user.id}, (err, data, response) ->
-              if err?
-                robot.logger.error "#{err}"
-              else
-                robot.logger.info "followed #{tweet.user.screen_name}"
-        )
+      twit_client.get 'search/tweets', { q: "#{keywords}", count: 10 }, (err, data, response) ->
+        data.statuses.forEach (tweet) ->
+          user_filter(tweet.user.id, (ng_flag, err) ->
+            if err?
+              robot.logger.error "#{err}"
+            else if !ng_flag
+              twit_client.post 'friendships/create', {user_id: tweet.user.id}, (err, data, response) ->
+                if err?
+                  robot.logger.error "#{err}"
+                else
+                  robot.logger.info "followed #{tweet.user.screen_name}"
+                return
+            return
+          )
+    return
 
   follow_job = ->
-    search_action(robot, follow)
+    search_action(follow)
+    return
 
   job = new cronJob
     cronTime: "0 15,45 * * * *"

@@ -59,6 +59,7 @@ module.exports = (robot) ->
 
   tweet_job = ->
     tweet()
+    return
 
   job = new cronJob
     cronTime: "0 0 * * * *"

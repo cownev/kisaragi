@@ -57,13 +57,18 @@ module.exports = (robot) ->
           return post(tweets)
         )
 
-  retweet = (keywords) ->
-    robot.logger.info "retweet search keywords: '#{keywords}'"
-    twit_client.get 'search/tweets', { q: "#{keywords}", count: 5, result_type: "mixed"}, (err, data, response) ->
-      post(data.statuses)
+  retweet = (keywords, err) ->
+    if err?
+      robot.logger.error "#{err}"
+    else
+      robot.logger.info "retweet search keywords: '#{keywords}'"
+      twit_client.get 'search/tweets', { q: "#{keywords}", count: 5, result_type: "mixed"}, (err, data, response) ->
+        post(data.statuses)
+    return
 
   retweet_job = ->
-    search_action(robot, retweet)
+    search_action(retweet)
+    return
 
   job = new cronJob
     cronTime: "0 10,50 * * * *"

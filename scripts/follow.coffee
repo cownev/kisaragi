@@ -1,7 +1,7 @@
-cronJob       = require('cron').CronJob
-twit          = require('twit')
-search_action = require('../lib/search_action')
-user_filter   = require('../lib/user_filter')
+cronJob        = require('cron').CronJob
+twit           = require('twit')
+tweet_searcher = require('../lib/tweet_searcher')
+user_filter    = require('../lib/user_filter')
 
 module.exports = (robot) ->
   keys =
@@ -35,7 +35,7 @@ module.exports = (robot) ->
     return
 
   follow_job = ->
-    search_action(follow)
+    tweet_searcher(follow)
     return
 
   job = new cronJob

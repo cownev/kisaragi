@@ -8,16 +8,15 @@ module.exports = (callback) ->
       if err?
         callback(null, err)
       else
-        collection = db.collection 'ngs'
-        keywords   = "#イベント"
+        collection = db.collection 'keywords'
+        keywords   = []
 
-        collection.find({"keyword": {$exists:true}}).each( (err, doc) ->
+        collection.find({"type":{$in:['search','ng_search']}}).each (err, doc) ->
           if err?
             callback(null, err)
           else if doc?
-            keyword = " " + "-\"" + doc.keyword + "\""
-            keywords += keyword
+            keyword = if doc.type is 'search' then doc.keyword else "-\"#{doc.keyword}\""
+            keywords.push(keyword)
           else
-            callback(keywords, null)
+            callback(keywords.join(" "), err)
         )
-    )

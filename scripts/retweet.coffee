@@ -25,7 +25,7 @@ module.exports = (robot) ->
         retweeted_uids.length = 0
         robot.logger.info "reset retweeted_uids"
 
-      user_filter(tweet.user.id, (ng_flag, err) ->
+      user_filter(tweet.user.id_str, (ng_flag, err) ->
         if err?
           robot.logger.error "#{err}"
           return

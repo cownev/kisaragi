@@ -20,7 +20,7 @@ module.exports = (robot) ->
 
       twit_client.get 'search/tweets', { q: "#{keywords}", count: 10 }, (err, data, response) ->
         data.statuses.forEach (tweet) ->
-          user_filter(tweet.user.id, (ng_flag, err) ->
+          user_filter(tweet.user.id_str, (ng_flag, err) ->
             if err?
               robot.logger.error "#{err}"
             else if !ng_flag

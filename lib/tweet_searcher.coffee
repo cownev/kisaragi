@@ -3,7 +3,7 @@ mongodb = require('mongodb')
 mongo     = mongodb.MongoClient
 mongo_url = process.env.MONGODB_URL
 
-module.exports = (callback) ->
+module.exports = (search, callback) ->
     mongo.connect(mongo_url, (err, db) ->
       if err?
         callback(null, err)
@@ -11,11 +11,11 @@ module.exports = (callback) ->
         collection = db.collection 'keywords'
         keywords   = []
 
-        collection.find({"type":{$in:['search','ng_search']}}).each (err, doc) ->
+        collection.find({"type":{$in:[search,'ng_search']}}).each (err, doc) ->
           if err?
             callback(null, err)
           else if doc?
-            keyword = if doc.type is 'search' then doc.keyword else "-\"#{doc.keyword}\""
+            keyword = if doc.type is search then doc.keyword else "-\"#{doc.keyword}\""
             keywords.push(keyword)
           else
             callback(keywords.join(" "), err)

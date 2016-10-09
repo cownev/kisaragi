@@ -35,7 +35,7 @@ module.exports = (robot) ->
     return
 
   follow_job = ->
-    tweet_searcher(follow)
+    tweet_searcher('event_search', follow)
     return
 
   job = new cronJob

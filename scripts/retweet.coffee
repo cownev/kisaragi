@@ -67,11 +67,17 @@ module.exports = (robot) ->
     return
 
   retweet_job = ->
-    tweet_searcher(retweet)
+    switch new Date().getMinutes()
+      when 30
+        search_word = 'anniversary_search'
+      else
+        search_word = 'event_search'
+
+    tweet_searcher(search_word, retweet)
     return
 
   job = new cronJob
-    cronTime: "0 10,50 * * * *"
+    cronTime: "0 10,30,50 * * * *"
     start: true
     timeZone: "Asia/Tokyo"
     onTick: ->

@@ -60,7 +60,7 @@ module.exports = function(robot) {
   };
 
   const job = new cronJob({
-    cronTime: "0 15,45 * * * *"
+    cronTime: "0 15,45 * * * *",
     start: true,
     timeZone: "Asia/Tokyo",
     onTick: function() {

@@ -13,7 +13,7 @@ module.exports = function(robot) {
     access_token_secret: process.env.HUBOT_TWITTER_TOKEN_SECRET
   });
   const mongo       = mongodb.MongoClient;
-  const mongo_url   = process.env.MONGODB_URL;
+  const mongo_url   = process.env.MONGODB_URI;
 
 
   const follow = async function(user) {

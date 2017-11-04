@@ -12,7 +12,7 @@ module.exports = (robot) ->
 
   twit_client = new twit keys
   mongo       = mongodb.MongoClient
-  mongo_url   = process.env.MONGODB_URL
+  mongo_url   = process.env.MONGODB_URI
 
 
   anomalous_eventday = (event, year) ->

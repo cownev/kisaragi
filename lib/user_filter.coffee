@@ -1,7 +1,7 @@
 mongodb = require('mongodb')
 
 mongo     = mongodb.MongoClient
-mongo_url = process.env.MONGODB_URL
+mongo_url = process.env.MONGODB_URI
 
 module.exports = (uid, callback) ->
     mongo.connect(mongo_url, (err, db) ->

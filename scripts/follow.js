@@ -30,6 +30,8 @@ module.exports = function(robot) {
       }
 
       await db.collection('users').updateOne({'twitter_id': user.id_str, 'type': 'followed'}, {$set: {'ts': moment().unix()}, $inc: {'count': 1}}, {upsert: true});
+      db.close();
+      
       robot.logger.info(`followed: ${user.screen_name} - ${user.id}`);
     }
     catch(err) {
